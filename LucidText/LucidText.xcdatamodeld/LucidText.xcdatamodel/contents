@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="15400" systemVersion="19E266" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="SavedWord" representedClassName=".SavedWord" syncable="YES">
+        <attribute name="arabic" attributeType="String"/>
+        <attribute name="bengali" attributeType="String"/>
+        <attribute name="definition" attributeType="String"/>
+        <attribute name="hindi" attributeType="String"/>
+        <attribute name="mandarin" attributeType="String"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="portuguese" attributeType="String"/>
+        <attribute name="spanish" attributeType="String"/>
+        <attribute name="synonyms" attributeType="String"/>
+    </entity>
+    <elements>
+        <element name="SavedWord" positionX="-63" positionY="-18" width="128" height="178"/>
+    </elements>
+</model>
