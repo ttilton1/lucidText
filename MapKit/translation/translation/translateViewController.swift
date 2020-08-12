@@ -44,6 +44,122 @@ class translateViewController: UIViewController {
 
         // Do any additional setup after loading the view.
     }
+    /*
+     struct Root: Codable {
+                let outputs: [Out]
+            }
+            
+            struct Out: Codable {
+                let output: Output
+            }
+            
+            struct Output: Codable {
+                let matches: [Match]
+               // let sDictSearch: Bool
+            }
+     */
+    func getAllDataTwo(inputText: String){
+        struct Root: Codable {
+            let outputs: [Out]
+        }
+        
+        struct Out: Codable {
+            let output: Output
+        }
+        
+        struct Output: Codable {
+            let matches: [Match]
+           // let sDictSearch: Bool
+        }
+        
+        struct Match: Codable{
+            let auto_complete: Bool
+            let model_name: String
+            let source: Source
+            let targets: [Target]
+        }
+        
+        struct Source: Codable {
+            let inflection: String
+            let info: String
+            let lemma: String
+            let phonetic: String
+            let pos: String
+            let term: String
+        }
+        
+        struct Target: Codable {
+            let lemma: String
+            let synonym: String
+        }
+        
+        let headers = [
+            "x-rapidapi-host": "systran-systran-platform-for-language-processing-v1.p.rapidapi.com",
+            "x-rapidapi-key": "2a6a7cb51cmshf5c498e9aa3a847p1187ffjsnb381fee134ff"
+        ]
+        
+        let request = NSMutableURLRequest(url: NSURL(string: "https://systran-systran-platform-for-language-processing-v1.p.rapidapi.com/resources/dictionary/lookup?source=en&target=es&input=shirt")! as URL,
+                                                cachePolicy: .useProtocolCachePolicy,
+                                            timeoutInterval: 10.0)
+        request.httpMethod = "GET"
+        request.allHTTPHeaderFields = headers
+
+        let session = URLSession.shared
+        _ = session.dataTask(with: request as URLRequest, completionHandler: {data, response, error in guard let data = data else {return}
+            
+        
+            
+            print("Got the data from network")
+            
+            // 4. DECODE THE RESULTING JSON
+            //
+           // let decoder = JSONDecoder()
+            
+            do {
+                // decode the JSON into our array of todoItem's
+                var syns = [String]()
+                 let root = try JSONDecoder().decode(Root.self, from: data)
+  //              print(root)
+                let outputs = root.outputs
+                for outputVar in outputs {
+                    let outVar = outputVar.output
+                    for match in outVar.matches {
+                           for target in match.targets {
+                           //for lemma in target.lemma {
+                            print(target.lemma)
+                                       
+                                 //   }
+                                             //break
+                                }
+                                         //break
+                            }
+                }
+              
+                   
+                  //break
+                
+                 if(syns.isEmpty){
+                     syns.append("no synonyms found")
+                 }
+               //  print(syns)
+              
+                
+            //    DispatchQueue.main.async {
+            //        self.theTranslation = attempter
+             //   }
+                
+            }
+            catch {
+                print("JSON Decode error")
+                print(error)
+            }
+            
+            
+            
+        }).resume()
+    }
+ 
+    
     
     
     
@@ -124,11 +240,11 @@ class translateViewController: UIViewController {
     
     
     @IBAction func searchPressed(_ sender: Any) {
-        getAllData(inputText: engText.text!)
+        getAllDataTwo(inputText: engText.text!)
     }
     
     @IBAction func displayText(_ sender: Any) {
-        resultText.text = theTranslation.data.translations[0].translatedText
+        //resultText.text = theTranslation.data.translations[0].translatedText
     }
     
     
