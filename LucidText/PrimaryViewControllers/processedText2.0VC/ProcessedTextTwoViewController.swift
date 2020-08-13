@@ -397,114 +397,137 @@ class ProcessedTextTwoViewController: UICollectionViewController, UITextViewDele
 extension ProcessedTextTwoViewController {
     
     func getAllData(inputText: String, completion: @escaping (_ translationDict: [String: String]?) -> ()) {
-        let headers = [
-            "x-rapidapi-host": "google-translate1.p.rapidapi.com",
-            "x-rapidapi-key": "5dc106ab99msh21857717c72d514p1ddd64jsn0c09f27c12d8",
-            "content-type": "application/x-www-form-urlencoded"
-        ]
-        var translations: [String: String] = ["es": "no translation found",
-                                              "zh-CN": "no translation found",
-                                              "hi": "no translation found",
-                                              "bn": "no translation found",
-                                              "pt": "no translation found",
-                                              "ar": "no translation found",]
-        //let languages: [String] = ["es", ]
-        let transCount = translations.count - 1
-        var counter = 0
-        for (key,value) in translations {
-            print(key)
+        //NEW FUNCTION FOR TRANSLATIONS
         
-        let textTotal = "&q=" + inputText
-        let postData = NSMutableData(data: "source=en".data(using: String.Encoding.utf8)!)
-        postData.append(textTotal.data(using: String.Encoding.utf8)!)
-        postData.append("&target=\(key)".data(using: String.Encoding.utf8)!)
-        
-        let request = NSMutableURLRequest(url: NSURL(string: "https://google-translate1.p.rapidapi.com/language/translate/v2")! as URL,
-                                                cachePolicy: .useProtocolCachePolicy,
-                                            timeoutInterval: 10.0)
-        request.httpMethod = "POST"
-        request.allHTTPHeaderFields = headers
-        request.httpBody = postData as Data
+            struct Root: Codable {
+                      let outputs: [Out]
+                  }
+                  
+                  struct Out: Codable {
+                      let output: Output
+                  }
+                  
+                  struct Output: Codable {
+                      let matches: [Match]
+                     // let sDictSearch: Bool
+                  }
+                  
+                  struct Match: Codable{
+                      let auto_complete: Bool
+                      let model_name: String
+                      let source: Source
+                      let targets: [Target]
+                  }
+                  
+                  struct Source: Codable {
+                      let inflection: String
+                      let info: String
+                      let lemma: String
+                      let phonetic: String
+                      let pos: String
+                      let term: String
+                  }
+                  
+                  struct Target: Codable {
+                      let lemma: String
+                      let synonym: String
+                  }
+                  
+                  let headers = [
+                      "x-rapidapi-host": "systran-systran-platform-for-language-processing-v1.p.rapidapi.com",
+                      "x-rapidapi-key": "2a6a7cb51cmshf5c498e9aa3a847p1187ffjsnb381fee134ff"
+                  ]
+            //Variable to hold returned string of translations
+            var retTranslations: [String: String] = ["es": "",
+                                                        "zh-Hans": "",
+                                                        "hi": "",
+                                                        "bn": "",
+                                                        "pt": "",
+                                                        "ar": "",]
+            //variable to hold array of string translations
+          
+                  //let languages: [String] = ["es", ]
+                  let transCount = retTranslations.count - 1
+                  var counter = 0
+                  for (key,value) in retTranslations {
+                      print(key)
+                    
+                    let request = NSMutableURLRequest(url: NSURL(string: "https://systran-systran-platform-for-language-processing-v1.p.rapidapi.com/resources/dictionary/lookup?source=en&target=\(key)&input=\(inputText)")! as URL,
+                        cachePolicy: .useProtocolCachePolicy,
+                        timeoutInterval: 10.0)
+                    
+                    request.httpMethod = "GET"
+                    request.allHTTPHeaderFields = headers
 
-        let session = URLSession.shared
+                    let session = URLSession.shared
         /*
         let dataTask = session.dataTask(with: request as URLRequest, completionHandler: { (data, response, error) -> Void in
             if (error != nil) {
                 print(error)
             }
         */
-        let dataTask = session.dataTask(with: request as URLRequest) {data, response, error in guard error == nil else {
-                DispatchQueue.main.async {
-                    self.removeSpinner()
-                    /*
-                    let alert1 = UIAlertController(title: "No Wifi", message: "You are not connected to Wifi", preferredStyle: .alert)
-                    
-                    alert1.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                    
-                    self.present(alert1, animated: true)
-                   // self.reloadInputViews()
-                    self.collectionView.reloadSections([2])
-                */
-                    return
-                    
-                }
-                print ("error: \(error!)")
+          let dataTask = session.dataTask(with: request as URLRequest) {data, response, error in guard error == nil else {
+                                    DispatchQueue.main.async {
+                                     self.removeSpinner()
+                                        return
+                                    }
+                                    print ("error: \(error!)")
+                                    return
+                                    
+                                }
+              guard let jsonData = data else {
+                               retTranslations[key] = "No data found"
+                                  print("No data")
+                               if(counter == transCount){
+                                 completion(retTranslations)
+                              }else{
+                         counter = counter + 1
+                      }
                 return
-                
             }
-            guard let jsonData = data else {
-                translations[key] = "no translation found"
-                  print("No data")
-                if(counter == transCount){
-                     print("complete in setDef")
-                     completion(translations)
-                 }else{
-                     counter = counter + 1
-                 }
-              return
-                
-                
-            }
-          //  print("Got the data from network")
+     
             // 4. DECODE THE RESULTING JSON
-            //
-            let decoder = JSONDecoder()
-            
-            do {
-                // decode the JSON into our array of todoItem's
-                
-                let attempter = try decoder.decode(totalTranslate.self, from: jsonData)
-               // print("attempter:\(attempter)")
-               // print("theWord:\(attempter.data.translations[0].translatedText)")
-                translations[key] = attempter.data.translations[0].translatedText
-                print("theKey:\(key)")
-                print("theWord:\(translations[key] ?? "no translation found")")
-          //      DispatchQueue.main.async {
-          //          self.theTranslation = attempter
-          //      }
-                if(counter == transCount){
-                     print("complete in setDef")
-                     completion(translations)
-                 }else{
-                     counter = counter + 1
-                 }
-                
-                
+           do {
+               let root = try JSONDecoder().decode(Root.self, from: jsonData)
+                      //      print(root)
+                            let outputs = root.outputs
+                            for outputVar in outputs {
+                                let outVar = outputVar.output
+                                for match in outVar.matches {
+                                       for target in match.targets {
+                                       //for lemma in target.lemma {
+                                        //print(target.lemma)
+                                          retTranslations[key]?.append("\(target.lemma) ")
+                                         //print("DECODE")
+                                      }                  //break
+                                  }                   //break
+                            }
+                    if (retTranslations[key]!.isEmpty){
+                        retTranslations[key]?.append("No synonyms found")
+                    }
+                    if(counter == transCount){
+                         print("Last round of for loop in setTranslations")
+                         completion(retTranslations)
+                      
+                     }else{
+                         counter = counter + 1
+                     }
+                }
+                catch {
+                    retTranslations[key]="Translation not found."
+                    if(counter == transCount){
+                         completion(retTranslations)
+                      //print(translations[key])
+                     }else{
+                         counter = counter + 1
+                     }
+                }
             }
-            catch {
-                translations[key]=("JSON DECODE ERROR")
-                if(counter == transCount){
-                     completion(translations)
-                 }else{
-                     counter = counter + 1
-                 }
-            }
-        }
-        dataTask.resume()
-            print("hello1111111")
-        }//for loop
-        print("return")
-        return
+            dataTask.resume()
+               // print("hello1111111")
+            }//for loop
+            //print("return")
+            return
     }
     
     func beginSave(inputStructArray: [newWord], completion: @escaping (_ doneString: String?) -> ()) {
@@ -531,7 +554,7 @@ extension ProcessedTextTwoViewController {
                  //   var newStruct = newWord(name1: newWordStruct.name, definition1: newWordStruct.definition)
                 //    newWordStruct.spanish = newTrans["es"]
                     let wordDataPoint2 = SavedWord(context: container.viewContext)
-                    let newStruct = newWord(name1: newWordStruct.name, definition1: newWordStruct.definition, syn1: self.synList[newWordStruct.name]!, sp1: newTrans["es"]!, hi1: newTrans["hi"]!, ar1: newTrans["ar"]!, ma1: newTrans["zh-CN"]!, be1: newTrans["bn"]!, pt1: newTrans["pt"]!)
+                    let newStruct = newWord(name1: newWordStruct.name, definition1: newWordStruct.definition, syn1: self.synList[newWordStruct.name]!, sp1: newTrans["es"]!, hi1: newTrans["hi"]!, ar1: newTrans["ar"]!, ma1: newTrans["zh-Hans"]!, be1: newTrans["bn"]!, pt1: newTrans["pt"]!)
                     wordDataPoint2.name = newStruct.name
                     wordDataPoint2.definition = newStruct.definition
                     wordDataPoint2.synonyms = newStruct.synonyms

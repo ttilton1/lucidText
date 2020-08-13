@@ -644,7 +644,7 @@ class HomeViewController: UIViewController, UITextViewDelegate {
             let text: String
         }
        
-        
+        //test updates
         var syns = [String]()
         let appId = "f1456cb7"
         let appKey = "b8c41db8d7143034e5206df098338589"
