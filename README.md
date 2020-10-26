@@ -1,6 +1,6 @@
-Cherokee Final Project
+Lucid Text:
 
-Educational Lucid Text:
+Type: Educational
 
 xcodeproject Name: **"LucidText.xcodeproj"** in the outermost folder (ignore the project in the folder "swift")
 Associated swift files are in the folder: "LucidText" (ignore the folders "swift", "MapKit", and "OldVCs")
@@ -51,16 +51,6 @@ MapKit
 CoreData
 
 Storyboard -
-
-In Main.Storyboard the relevant view controller are all those associated with the TabBar View Controller.
-Refer to "Lucid_Text_Sketches.pdf" in the main Cherokee Directory for our storyboard.
-
-In case you are looking at files, most main swift files are stored in the folders:
-"LucidText/PrimaryViewControlllers"
-"LucidText/MapTestFolder"
-"LucidText/CoreData"
-"LucidText/Utilities"
-"LucidText/Assets.xcassets"
 
 Every displayed view controller is a UICollectionViewController except HomeViewController which is a normal UIViewController. Each UICollectionViewController uses custom collectionViewCells.
 
